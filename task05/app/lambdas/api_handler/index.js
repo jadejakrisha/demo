@@ -1,13 +1,14 @@
-const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const AWS = require("aws-sdk");
 const { v4: uuidv4 } = require("uuid");
 
-const dynamoDB = new DynamoDBClient({ region: "us-east-1" }); // Change region if needed
-const TABLE_NAME = "Events";
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const TABLE_NAME = "cmtr-3908e2d8-Events-j8z8"; // Ensure this is the correct table name
 
 exports.handler = async (event) => {
     try {
-        const requestBody = JSON.parse(event.body);
+        const requestBody = JSON.parse(event.body); // Parse the request body
 
+        // Validate required fields
         if (!requestBody.principalId || !requestBody.content) {
             return {
                 statusCode: 400,
@@ -15,30 +16,26 @@ exports.handler = async (event) => {
             };
         }
 
-        const createdAt = new Date().toISOString();
-        const eventId = uuidv4();
-
+        // Construct the event object
         const newEvent = {
-            id: { S: eventId },
-            principalId: { N: requestBody.principalId.toString() },
-            createdAt: { S: createdAt },
-            body: { S: JSON.stringify(requestBody.content) }
+            id: uuidv4(), // Generate a UUID v4
+            principalId: requestBody.principalId,
+            createdAt: new Date().toISOString(), // ISO 8601 formatted timestamp
+            body: requestBody.content, // Store content as body
         };
 
-        await dynamoDB.send(new PutItemCommand({
+        // Save to DynamoDB
+        await dynamoDB.put({
             TableName: TABLE_NAME,
-            Item: newEvent
-        }));
+            Item: newEvent,
+        }).promise();
 
+        // Return the created event
         return {
             statusCode: 201,
-            body: JSON.stringify({
-                id: eventId,
-                principalId: requestBody.principalId,
-                createdAt,
-                body: requestBody.content
-            }),
+            body: JSON.stringify({ event: newEvent }),
         };
+
     } catch (error) {
         console.error("Error saving event:", error);
         return {
