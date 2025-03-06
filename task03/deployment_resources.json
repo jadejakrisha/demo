@@ -53,20 +53,5 @@
       }
     },
     "tags": {}
-  },
-  "hello_world": {
-    "resource_type": "lambda",
-    "runtime": "nodejs18.x",
-    "handler": "index.handler",
-    "memory_size": 128,
-    "timeout": 30,
-    "event_sources": [
-      {
-        "type": "sqs",
-        "arn": "!ref async_queue"
-      }
-    ],
-    "dependencies": [],
-    "tags": {}
   }
 }
