@@ -2,9 +2,9 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuidv4 } from "uuid";
 
-// Initialize DynamoDB Client
 const dynamoDBClient = new DynamoDBClient();
 const TABLE_NAME = process.env.TABLE_NAME || "Events";
+
 
 export const handler = async (event) => {
     try {
@@ -21,7 +21,6 @@ export const handler = async (event) => {
             };
         }
 
-        // Validate required fields
         if (!inputEvent?.principalId || inputEvent?.content === undefined) {
             console.error("Validation failed: Missing required fields", inputEvent);
             return {
@@ -37,24 +36,27 @@ export const handler = async (event) => {
             id: eventId,
             principalId: Number(inputEvent.principalId),
             createdAt,
-            body: typeof inputEvent.content === "object" ? inputEvent.content : { value: inputEvent.content }
+            body: inputEvent.content
         };
 
         console.log("Saving to DynamoDB:", JSON.stringify(eventItem, null, 2));
 
-        // Save to DynamoDB
-        await dynamoDBClient.send(new PutCommand({
+        const response = await dynamoDBClient.send(new PutCommand({
             TableName: TABLE_NAME,
             Item: eventItem,
         }));
-
         console.log("Saved successfully");
 
-        // Correctly formatted response
-        return {
-            statusCode: 201,
-            body: JSON.stringify(eventItem)
-        };
+        console.log("DynamoDB Response:", response);
+
+        const responseObject = {
+                    statusCode: 201,
+                    event: eventItem
+
+                };
+
+
+        return responseObject;
 
     } catch (error) {
         console.error("Error processing request:", error);
