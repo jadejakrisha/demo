@@ -18,6 +18,7 @@
             "sqs:ReceiveMessage",
             "sqs:DeleteMessage",
             "sqs:GetQueueAttributes"
+
           ],
           "Effect": "Allow",
           "Resource": "*"
