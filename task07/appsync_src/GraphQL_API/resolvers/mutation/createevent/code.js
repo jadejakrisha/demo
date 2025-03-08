@@ -1,37 +1,32 @@
 import { util } from '@aws-appsync/utils';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Sends a request to the attached data source (DynamoDB)
- * @param {import('@aws-appsync/utils').Context} ctx the context
+ * Sends a request to the attached DynamoDB data source
+ * @param {import('@aws-appsync/utils').Context} ctx
  * @returns {*} the request
  */
 export function request(ctx) {
-    const { userId, payLoad } = ctx.args;
+    const { userId, payLoad } = ctx.arguments;
 
     return {
-        operation: "PutItem",
-        key: { id: util.autoId() },  // Generates a UUID for id
+        operation: 'PutItem',
+        key: {
+            id: { S: uuidv4() },
+        },
         attributeValues: {
-            id: util.dynamodb.toDynamoDBJson(util.autoId()),
-            userId: util.dynamodb.toDynamoDBJson(userId),
-            createdAt: util.dynamodb.toDynamoDBJson(util.time.nowISO8601()),
-            payLoad: util.dynamodb.toDynamoDBJson(payLoad)
+            userId: { N: String(userId) },
+            createdAt: { S: util.time.nowISO8601() },
+            payLoad: { S: JSON.stringify(payLoad) }
         }
     };
 }
 
 /**
  * Returns the resolver result
- * @param {import('@aws-appsync/utils').Context} ctx the context
+ * @param {import('@aws-appsync/utils').Context} ctx
  * @returns {*} the result
  */
 export function response(ctx) {
-    if (ctx.error) {
-        return util.error(ctx.error.message, ctx.error.type);
-    }
-
-    return {
-        id: ctx.result.id,
-        createdAt: ctx.result.createdAt
-    };
+    return ctx.result;
 }
