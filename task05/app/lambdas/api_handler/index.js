@@ -50,12 +50,12 @@ export const handler = async (event) => {
         console.log("DynamoDB Response:", response);
 
         const responseObject = {
-                    statusCode: 201,
-                    event: eventItem
-
-                };
-
-
+        statusCode: 201,
+        body: JSON.stringify(
+        {
+         statusCode: 201,
+           event: eventItem
+             })};
         return responseObject;
 
     } catch (error) {
