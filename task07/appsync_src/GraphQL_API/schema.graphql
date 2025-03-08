@@ -6,7 +6,7 @@ type Query {
   getEvent(id: ID!): Event
 }
 
-type Event {
+type Event @model @aws_api_key {
   id: ID!
   userId: Int!
   createdAt: AWSDateTime!

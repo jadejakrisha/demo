@@ -11,13 +11,12 @@ export function request(ctx) {
 
     return {
         operation: 'PutItem',
-        key: {
-            id: { S: uuidv4() },
-        },
+        key: { id: uuidv4() },
         attributeValues: {
-            userId: { N: String(userId) },
-            createdAt: { S: util.time.nowISO8601() },
-            payLoad: { S: JSON.stringify(payLoad) }
+            id: uuidv4(),
+            userId: userId,
+            createdAt: util.time.nowISO8601(),
+            payLoad: JSON.stringify(payLoad)
         }
     };
 }

@@ -1,3 +1,5 @@
+import { util } from '@aws-appsync/utils';
+
 /**
  * Sends a request to the attached DynamoDB data source
  * @param {import('@aws-appsync/utils').Context} ctx
@@ -6,9 +8,7 @@
 export function request(ctx) {
     return {
         operation: 'GetItem',
-        key: {
-            id: { S: ctx.arguments.id }
-        }
+        key: { id: ctx.arguments.id }
     };
 }
 
@@ -23,9 +23,9 @@ export function response(ctx) {
     }
 
     return {
-        id: ctx.result.id.S,
-        userId: parseInt(ctx.result.userId.N, 10),
-        createdAt: ctx.result.createdAt.S,
-        payLoad: JSON.parse(ctx.result.payLoad.S)
+        id: ctx.result.id,
+        userId: ctx.result.userId,
+        createdAt: ctx.result.createdAt,
+        payLoad: JSON.parse(ctx.result.payLoad)
     };
 }
