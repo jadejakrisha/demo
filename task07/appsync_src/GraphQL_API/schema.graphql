@@ -1,14 +1,38 @@
-type Mutation {
-  createEvent(userId: Int!, payLoad: AWSJSON!): Event
+# Define the structure of your API with the GraphQL
+# schema definition language (SDL) here.
+scalar AWSJSON
+
+schema {
+	query: Query
+	mutation: Mutation
 }
 
 type Query {
-  getEvent(id: ID!): Event
+	getEvent(id: ID!): Event
 }
 
-type Event @model @aws_api_key {
-  id: ID!
-  userId: Int!
-  createdAt: AWSDateTime!
-  payLoad: AWSJSON!
+type Mutation {
+	createEvent(userId: Int!, payLoad: AWSJSON!): EventCreationResponse
 }
+
+type EventCreationResponse {
+	id: ID!
+	createdAt: String!
+}
+
+type Event {
+	id: ID!
+	userId: Int!
+	createdAt: String!
+	payLoad: Payload
+}
+
+type Payload {
+	meta: Meta
+}
+
+type Meta {
+	key1: Int
+	key2: String
+}
+    
